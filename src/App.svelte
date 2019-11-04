@@ -1,10 +1,14 @@
 <script>
+	import Tasks from './components/tasks.svelte';
+
 	let name = 'world';
 	let title = '';
 	let tasks = [];
 	$: completedTasks = tasks.filter(item => item.completed==true);
 	$: incompleteTasks = tasks.filter(item => item.completed==false);
 	let addTask = () => {
+		if(title.trim() === '')
+			return;
 		let task = {
 			title,
 			id: tasks.length,
@@ -32,38 +36,45 @@
 
 <form on:submit|preventDefault={addTask} >
 	<input type="text" bind:value={title} placeholder="Type something..." />
-	<button type="submit">Submit</button>
+	<button type="submit">Add</button>
 </form>
-<h2>To Do</h2>
-{#each incompleteTasks as task}
-	<div class="tasks">
-		{task.title}
-		<button on:click={()=>completed(task.id)}>Done</button>
-		<button on:click={()=>deleteTask(task.id)}>Delete</button>
-	</div>
-{/each}
-<h2>Done</h2>
-{#each completedTasks as task}
-	<div class="tasks">
-		{task.title}
-		<button on:click={()=>notcompleted(task.id)}>Not Done</button>
-		<button on:click={()=>deleteTask(task.id)}>Delete</button>
-	</div>
-{/each}
 
+{#if incompleteTasks.length>0}
+<h2>To Do</h2>
+<Tasks tasks={incompleteTasks} {deleteTask} {completed} type="incomplete"/>
+{/if}
+
+{#if completedTasks.length>0}
+<h2>Done</h2>
+<Tasks tasks={completedTasks} {deleteTask} {notcompleted} type="complete"/>
+{/if}
 
 <style>
+	:global(body) {
+		background-color: black;
+		color: white;
+		text-align: center;
+	}
 	h1, div {
 		
 	}
 	h2 {
 		text-decoration: underline;
 	}
-	.tasks {
-		text-align: left;
-		width: 200px;
-		margin: 20px auto;
-		border: solid 1px grey;
-		padding : 10px 30px;
+	input {
+		outline: none;
+		border: none;
+		border-bottom: 2px solid white;
+		padding-bottom: 5px;
+		color: white;
+		background-color: black;
+		margin: 0 20px;
 	}
+
+	button {
+		background-color:black;
+		color: white;
+		border: 2px solid white;
+	}
+	
 </style>
